@@ -1,4 +1,4 @@
--- LTSpice utilities
+-- LTSpice parser utilities
 
 local type = type
 local getmetatable = getmetatable
