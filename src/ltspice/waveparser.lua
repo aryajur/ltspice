@@ -153,7 +153,7 @@ local function read_transient(fs,vars,start,stop,maxpoints)
 	return data
 end
 
--- Function to calculate the average energy supplied by integrating the power from t[start] to t[stop]
+-- Function to calculate the total energy supplied by integrating the power from t[start] to t[stop]
 -- fs is the file structure
 -- Vp is the array containing the +ve node voltages
 -- Vn is the array containing the -ve node voltages (OPTIONAL). If not given this is assumed as ground.
@@ -176,12 +176,28 @@ function getEnergy(fs,t,Vp,Vn,I,start,stop)
 	if not Vn then
 		fPi = fPi2
 	end
-	for i = start+1,stop do
+	for i = start+1,stop do	-- starting from start+1 since Pim1 takes the previous point
 		Pi = fPi(i,Vp,Vn,I)
 		Pim1 = fPi(i-1,Vp,Vn,I)
 		E = E + 0.5*(Pi+Pim1)*(t[i]-t[i-1])
 	end
 	return E
+end
+
+-- Function to calculate the RMS value of the given wave vector
+-- fs is the file structure
+-- wave is the vector containing the waveform data
+-- start is the start index from where the integral is to be calculated (default = 1)
+-- stop is the stop index up till where the integral will be done (default = #t)
+function getRMS(fs,t,wave,start,stop)
+	local sum = 0
+	start = start or 1
+	stop = stop or #t
+	for i = start+1,stop do
+		sum = sum + (wave[i]^2)*(t[i]-t[i-1])
+	end
+	-- Mean sqrt
+	return math.sqrt(sum/(t[stop]-t[start]))
 end
 
 -- Function to calculate the efficiency from a transient simulation
@@ -340,6 +356,7 @@ rawParser = function(filename)
 		fsmeta.__index.read = read_transient
 		fsmeta.__index.getEfficiency = getEfficiency
 		fsmeta.__index.getEnergy = getEnergy
+		fsmeta.__index.getRMS = getRMS
 	elseif fs.mode == "AC" then
 		return nil,"AC file reading not added yet"
 	elseif fs.mode == "FFT" then
