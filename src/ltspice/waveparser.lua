@@ -4,6 +4,7 @@ local type = type
 local getmetatable = getmetatable
 local setmetatable = setmetatable
 local tonumber = tonumber
+local tostring = tostring
 
 local table = table
 local io = io
@@ -19,7 +20,7 @@ local M = {}
 package.loaded[...] = M
 _ENV = M		-- Lua 5.2+
 
-_VERSION = "1.21.03.23"	
+_VERSION = "1.21.06.11"	
 
 -- File handling functions
 
@@ -350,7 +351,7 @@ rawParser = function(filename)
 	-- Check whether the file length is correct
 	local size = f:seek("end")
 	if size ~= fs.datapos+((#fs.vars-1)*4+8)*fs.numpts then
-		return nil, "Incorrect file size."
+		return nil, "Incorrect file size. Expected: "..tostring(fs.datapos+((#fs.vars-1)*4+8)*fs.numpts).." got: "..tostring(size)
 	end
 	if fs.mode == "Transient" then
 		fsmeta.__index.read = read_transient
