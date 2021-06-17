@@ -74,6 +74,9 @@ local function read_transient(fs,vars,start,stop,maxpoints)
 			table.remove(offset,i)
 		end
 	end
+	if #vars == 0 then
+		return nil,"No waves found!"
+	end
 	for i = 1,#offset do
 		data[i] = {}
 	end
