@@ -20,7 +20,7 @@ local M = {}
 package.loaded[...] = M
 _ENV = M		-- Lua 5.2+
 
-_VERSION = "1.21.06.11"	
+_VERSION = "1.21.07.08"	
 
 -- File handling functions
 
@@ -37,6 +37,8 @@ local function close(fs)
 	fsmeta.fileHandle = nil
 	return true		
 end
+
+-- Function to read the transient data
 
 -- Function to read the transient plot data
 -- fs is the file structure
@@ -353,7 +355,7 @@ rawParser = function(filename)
 	end
 	-- Check whether the file length is correct
 	local size = f:seek("end")
-	if size ~= fs.datapos+((#fs.vars-1)*4+8)*fs.numpts then
+	if size < fs.datapos+((#fs.vars-1)*4+8)*fs.numpts then
 		return nil, "Incorrect file size. Expected: "..tostring(fs.datapos+((#fs.vars-1)*4+8)*fs.numpts).." got: "..tostring(size)
 	end
 	if fs.mode == "Transient" then
